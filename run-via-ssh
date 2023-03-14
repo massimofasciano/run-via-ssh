@@ -1,0 +1,32 @@
+#!/bin/bash
+
+SSHDIR="/tmp"
+
+ARGC=$#
+if [ $ARGC -lt 2 ]; then
+	echo "Usage: ${0} ssh_dest exec_file [ARGS..]"
+	exit 1
+fi
+
+SSHDEST="${1}"
+shift
+
+PROGRAM="${1}"
+BASE_PROG="`basename ${PROGRAM}`"
+SSHCMD="${BASE_PROG}"
+shift
+
+echo "Running ${BASE_PROG} on ${SSHDEST}"
+echo "Program args: ${@}"
+
+ARGS_QUOTED=""
+for arg in "$@"; do
+	ARGS_QUOTED="${ARGS_QUOTED} ${arg@Q}"
+done
+echo "Program args (quoted): ${ARGS_QUOTED}"
+
+ID="$$-${RANDOM}"
+
+scp -q ${PROGRAM} ${SSHDEST}:${SSHDIR}/${SSHCMD}-${ID}
+ssh ${SSHDEST} cd ${SSHDIR} \; ./${SSHCMD}-${ID} "${ARGS_QUOTED}" \; rm ${SSHCMD}-${ID}
+
