@@ -1,5 +1,4 @@
-#run-via-ssh
-
+# run-via-ssh
 A simple shell script to run a command on a remote ssh host.
 
 First argument is the SSH remote (user@host).
